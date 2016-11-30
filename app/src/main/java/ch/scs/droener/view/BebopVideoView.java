@@ -1,6 +1,11 @@
 package ch.scs.droener.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.AttributeSet;
@@ -12,10 +17,15 @@ import com.parrot.arsdk.arcontroller.ARCONTROLLER_STREAM_CODEC_TYPE_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import ch.scs.droener.ImageUtils;
 
 public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -97,6 +107,12 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
 
                 while (outIndex >= 0) {
+                    try (Image image = mMediaCodec.getOutputImage(outIndex)) {
+                        Mat mat = ImageUtils.imageToMat(image);
+                        Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+                        Utils.matToBitmap(mat, bitmap);
+                        drawBitmap(bitmap);
+                    }
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
                 }
@@ -107,6 +123,24 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
 
         mReadyLock.unlock();
+    }
+
+    private void drawBitmap(Bitmap bitmap) {
+        Canvas canvas = getHolder().lockCanvas();
+        if (canvas != null) {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+            float scaleHeight = (float) canvas.getHeight() / bitmap.getHeight();
+            float scaleWidth = (float) canvas.getWidth() / bitmap.getWidth();
+            float scale = Math.min(scaleHeight, scaleWidth);
+            canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
+                    new Rect((int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2),
+                            (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2),
+                            (int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2 + scale*bitmap.getWidth()),
+                            (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2 + scale*bitmap.getHeight())), null);
+
+            getHolder().unlockCanvasAndPost(canvas);
+        }
     }
 
     public void configureDecoder(ARControllerCodec codec) {
@@ -132,7 +166,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
         format.setByteBuffer("csd-0", mSpsBuffer);
         format.setByteBuffer("csd-1", mPpsBuffer);
 
-        mMediaCodec.configure(format, getHolder().getSurface(), null, 0);
+        mMediaCodec.configure(format, null, null, 0);
         mMediaCodec.start();
 
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {

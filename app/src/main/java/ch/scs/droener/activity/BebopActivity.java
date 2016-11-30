@@ -26,6 +26,7 @@ import ch.scs.droener.R;
 import ch.scs.droener.VisualProcessing.BebopFrameController;
 import ch.scs.droener.VisualProcessing.FrameController;
 import ch.scs.droener.VisualProcessing.FrameProcessor;
+import ch.scs.droener.VisualProcessing.HoughCircleTransformation;
 import ch.scs.droener.drone.BebopDrone;
 import ch.scs.droener.view.BebopVideoView;
 
@@ -60,7 +61,8 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone = new BebopDrone(this, service);
         mBebopDrone.addListener(mBebopListener);
 
-        mFrameController = new BebopFrameController(null, mBebopDrone);
+        FrameProcessor processor = new HoughCircleTransformation();
+        mFrameController = new BebopFrameController(processor, mBebopDrone);
         mVideoView.setFrameController(mFrameController);
     }
 

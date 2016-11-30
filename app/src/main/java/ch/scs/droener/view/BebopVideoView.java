@@ -131,20 +131,14 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
         if (canvas != null) {
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
-            float scale = 1;
-            if (scale != 0) {
-                canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
-                        new Rect((int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2),
-                                (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2),
-                                (int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2 + scale*bitmap.getWidth()),
-                                (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2 + scale*bitmap.getHeight())), null);
-            } else {
-                canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
-                        new Rect((canvas.getWidth() - bitmap.getWidth()) / 2,
-                                (canvas.getHeight() - bitmap.getHeight()) / 2,
-                                (canvas.getWidth() - bitmap.getWidth()) / 2 + bitmap.getWidth(),
-                                (canvas.getHeight() - bitmap.getHeight()) / 2 + bitmap.getHeight()), null);
-            }
+            float scaleHeight = (float) canvas.getHeight() / bitmap.getHeight();
+            float scaleWidth = (float) canvas.getWidth() / bitmap.getWidth();
+            float scale = Math.min(scaleHeight, scaleWidth);
+            canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
+                    new Rect((int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2),
+                            (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2),
+                            (int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2 + scale*bitmap.getWidth()),
+                            (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2 + scale*bitmap.getHeight())), null);
 
             getHolder().unlockCanvasAndPost(canvas);
         }

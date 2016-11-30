@@ -1,6 +1,7 @@
 package ch.scs.droener.view;
 
 import android.content.Context;
+import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.AttributeSet;
@@ -97,6 +98,8 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
 
                 while (outIndex >= 0) {
+                    Image image = mMediaCodec.getOutputImage(outIndex);
+                    Log.i(TAG, image.toString());
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
                 }
@@ -132,7 +135,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
         format.setByteBuffer("csd-0", mSpsBuffer);
         format.setByteBuffer("csd-1", mPpsBuffer);
 
-        mMediaCodec.configure(format, getHolder().getSurface(), null, 0);
+        mMediaCodec.configure(format, null, null, 0);
         mMediaCodec.start();
 
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {

@@ -49,12 +49,6 @@ public class DeviceListActivity extends AppCompatActivity {
 
     private final List<ARDiscoveryDeviceService> mDronesList = new ArrayList<>();
 
-    // this block loads the native libraries
-    // it is mandatory
-    static {
-        ARSDK.loadSDKLibs();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {

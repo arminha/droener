@@ -47,6 +47,8 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 368;
 
+    private long mFrameCount;
+
     private FrameController mController;
     public void setFrameController(FrameController controller) {
         mController = controller;
@@ -113,14 +115,17 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
 
                 while (outIndex >= 0) {
-                    try (Image image = mMediaCodec.getOutputImage(outIndex)) {
-                        Mat mat = ImageUtils.imageToMat(image);
-                        if(mController != null) {
-                            mController.processFrame(mat);
+                    mFrameCount++;
+                    if (mFrameCount % 2 == 0) {
+                        try (Image image = mMediaCodec.getOutputImage(outIndex)) {
+                            Mat mat = ImageUtils.imageToMat(image);
+                            if(mController != null) {
+                                mController.processFrame(mat);
+                            }
+                            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(mat, bitmap);
+                            drawBitmap(bitmap);
                         }
-                        Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
-                        Utils.matToBitmap(mat, bitmap);
-                        drawBitmap(bitmap);
                     }
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);

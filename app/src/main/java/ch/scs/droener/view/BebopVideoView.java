@@ -117,6 +117,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 while (outIndex >= 0) {
                     mFrameCount++;
                     if (mFrameCount % 2 == 0) {
+                        long frameStart = System.currentTimeMillis();
                         try (Image image = mMediaCodec.getOutputImage(outIndex)) {
                             Mat mat = ImageUtils.imageToMat(image);
                             if(mController != null) {
@@ -126,6 +127,8 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                             Utils.matToBitmap(mat, bitmap);
                             drawBitmap(bitmap);
                         }
+                        long frameTime = System.currentTimeMillis() - frameStart;
+                        Log.d(TAG, "Processed frame in " + frameTime + " ms");
                     } else {
                         Log.d(TAG, "Drop frame");
                     }

@@ -169,4 +169,12 @@
         android:layout_alignRight="@+id/gazDownBt"
         android:layout_alignEnd="@+id/gazDownBt"
         android:gravity="center_horizontal"/>
+
+    <Button
+        android:text="@string/activate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/actoveBt" />
 </RelativeLayout>

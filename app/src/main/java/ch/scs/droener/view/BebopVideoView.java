@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -121,14 +122,14 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                         try (Image image = mMediaCodec.getOutputImage(outIndex)) {
                             Mat mat = ImageUtils.imageToMat(image);
                             if(mController != null) {
-                                mController.processFrame(mat);
+                                new ProcessImageTask().execute(mat);
                             }
                             //drawMat(mat);
                         }
                         long frameTime = System.currentTimeMillis() - frameStart;
                         Log.d(TAG, "Processed frame in " + frameTime + " ms");
                     }
-                    mMediaCodec.releaseOutputBuffer(outIndex, true);
+                    mMediaCodec.releaseOutputBuffer(outIndex, false);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
                 }
             } catch (IllegalStateException e) {
@@ -138,6 +139,15 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
 
         mReadyLock.unlock();
+    }
+
+    private class ProcessImageTask extends AsyncTask<Mat, Void, Void>  {
+
+        @Override
+        protected Void doInBackground(Mat... mats) {
+            mController.processFrame(mats[0]);
+            return null;
+        }
     }
 
     private void drawMat(Mat mat ) {

@@ -123,9 +123,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                             if(mController != null) {
                                 mController.processFrame(mat);
                             }
-                            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
-                            Utils.matToBitmap(mat, bitmap);
-                            drawBitmap(bitmap);
+                            //drawMat(mat);
                         }
                         long frameTime = System.currentTimeMillis() - frameStart;
                         Log.d(TAG, "Processed frame in " + frameTime + " ms");
@@ -142,6 +140,12 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
 
         mReadyLock.unlock();
+    }
+
+    private void drawMat(Mat mat ) {
+        Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat, bitmap);
+        drawBitmap(bitmap);
     }
 
     private void drawBitmap(Bitmap bitmap) {

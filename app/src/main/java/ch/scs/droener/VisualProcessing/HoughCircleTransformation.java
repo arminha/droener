@@ -1,6 +1,7 @@
 package ch.scs.droener.VisualProcessing;
 
-import org.opencv.core.Core;
+import android.util.Log;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -10,6 +11,8 @@ import org.opencv.imgproc.Imgproc;
  * Created by Remo on 11/30/2016.
  */
 public class HoughCircleTransformation implements FrameProcessor {
+
+    private static final String TAG = "HoughCircleTrans";
 
     private static int iCannyUpperThreshold = 100;
     private static int iMinRadius = 20;
@@ -22,6 +25,8 @@ public class HoughCircleTransformation implements FrameProcessor {
 
     @Override
     public void processFrame(Mat image) {
+        Log.d(TAG, "start processing frame");
+
         Mat circles = new Mat();
         Imgproc.medianBlur(image, image, kernelSize);
         Imgproc.cvtColor(image, circles, Imgproc.COLOR_GRAY2BGR);
@@ -33,6 +38,8 @@ public class HoughCircleTransformation implements FrameProcessor {
         int maxRadius = 0;
         Point ptLargestCircle = null;
 
+        Log.d(TAG, "number of detected circles: " + circles.cols());
+
         if (circles.cols() > 0) {
             for (int x = 0; x < circles.cols(); x++) {
                 double vCircle[] = circles.get(0, x);
@@ -40,8 +47,11 @@ public class HoughCircleTransformation implements FrameProcessor {
                 if (vCircle == null)
                     break;
 
+
                 Point pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
                 int radius = (int) Math.round(vCircle[2]);
+
+                Log.d(TAG, "circle detected center " + pt + " with radius " + radius);
 
                 if (radius > maxRadius) {
                     ptLargestCircle = pt;
@@ -56,6 +66,7 @@ public class HoughCircleTransformation implements FrameProcessor {
         }
 
         if (null != ptLargestCircle) {
+            Log.d(TAG, "largest circle detected center " + ptLargestCircle);
             deviationX = (int) ptLargestCircle.x - image.width() / 2;
             deviationY = (int) ptLargestCircle.y - image.height() / 2;
         }

@@ -108,7 +108,6 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
                 while (outIndex >= 0) {
                     try (Image image = mMediaCodec.getOutputImage(outIndex)) {
-                        Log.i(TAG, "image format: " + image.getFormat());
                         Mat mat = ImageUtils.imageToMat(image);
                         Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
                         Utils.matToBitmap(mat, bitmap);

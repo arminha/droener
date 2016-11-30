@@ -10,5 +10,6 @@ import ch.scs.droener.drone.BebopDrone;
 
 public interface FrameProcessor {
     void processFrame(Mat frame);
-    void setDrone(BebopDrone drone);
+    int getDeviationX();
+    int getDeviationY();
 }

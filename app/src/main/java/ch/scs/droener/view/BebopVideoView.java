@@ -26,7 +26,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ch.scs.droener.ImageUtils;
-import ch.scs.droener.VisualProcessing.FrameProcessor;
+import ch.scs.droener.VisualProcessing.FrameController;
 
 public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -47,9 +47,9 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 368;
 
-    private FrameProcessor mProc;
-    public void setFrameProcessor(FrameProcessor proc) {
-        mProc = proc;
+    private FrameController mController;
+    public void setFrameController(FrameController controller) {
+        mController = controller;
     }
 
     public BebopVideoView(Context context) {
@@ -115,8 +115,8 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 while (outIndex >= 0) {
                     try (Image image = mMediaCodec.getOutputImage(outIndex)) {
                         Mat mat = ImageUtils.imageToMat(image);
-                        if(mProc != null) {
-                            mProc.processFrame(mat);
+                        if(mController != null) {
+                            mController.processFrame(mat);
                         }
                         Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
                         Utils.matToBitmap(mat, bitmap);

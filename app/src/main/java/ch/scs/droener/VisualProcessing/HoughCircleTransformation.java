@@ -31,9 +31,9 @@ public class HoughCircleTransformation implements FrameProcessor {
         Imgproc.medianBlur(image, image, kernelSize);
         Imgproc.cvtColor(image, circles, Imgproc.COLOR_GRAY2BGR);
 
-        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT,
-                2.0, image.rows() / 8, iCannyUpperThreshold, iAccumulator,
-                iMinRadius, iMaxRadius);
+        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2.0, 50);
+                //2.0, image.rows() / 8, iCannyUpperThreshold, iAccumulator,
+                //iMinRadius, iMaxRadius);
 
         int maxRadius = 0;
         Point ptLargestCircle = null;
@@ -59,9 +59,9 @@ public class HoughCircleTransformation implements FrameProcessor {
 
                 // draw the found circle
                 // draw the circle outline
-                Imgproc.circle(image, pt, radius, new Scalar(0, 255, 0), 2);
+                //Imgproc.circle(image, pt, radius, new Scalar(0, 255, 0), 2);
                 // draw the circle center
-                Imgproc.circle(image, pt, 3, new Scalar(0, 0, 255), 2);
+                //Imgproc.circle(image, pt, 3, new Scalar(0, 0, 255), 2);
             }
         }
 

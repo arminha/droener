@@ -23,6 +23,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import ch.scs.droener.R;
+import ch.scs.droener.VisualProcessing.FrameProcessor;
 import ch.scs.droener.drone.BebopDrone;
 import ch.scs.droener.view.BebopVideoView;
 
@@ -56,6 +57,8 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone = new BebopDrone(this, service);
         mBebopDrone.addListener(mBebopListener);
 
+        FrameProcessor proc = null;
+        mVideoView.setFrameProcessor(proc);
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import ch.scs.droener.R;
+import ch.scs.droener.VisualProcessing.BebopFrameController;
 import ch.scs.droener.VisualProcessing.FrameController;
 import ch.scs.droener.VisualProcessing.FrameProcessor;
 import ch.scs.droener.drone.BebopDrone;
@@ -36,6 +37,7 @@ public class BebopActivity extends AppCompatActivity {
     private ProgressDialog mDownloadProgressDialog;
 
     private BebopVideoView mVideoView;
+    private BebopFrameController mFrameController;
 
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
@@ -58,8 +60,8 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone = new BebopDrone(this, service);
         mBebopDrone.addListener(mBebopListener);
 
-        FrameController proc = null;
-        mVideoView.setFrameController(proc);
+        mFrameController = new BebopFrameController(null, mBebopDrone);
+        mVideoView.setFrameController(mFrameController);
     }
 
     @Override

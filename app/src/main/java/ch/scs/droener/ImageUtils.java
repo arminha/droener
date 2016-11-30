@@ -66,7 +66,7 @@ public class ImageUtils {
         }
 
         // Finally, create the Mat.
-        Mat mat = new Mat(height + height / 2, width, CvType.CV_8UC1);
+        Mat mat = new Mat(height, width, CvType.CV_8UC1);
         mat.put(0, 0, data);
 
         return mat;

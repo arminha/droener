@@ -17,7 +17,7 @@ public class BebopFrameController implements FrameController {
     /**
      * Pixel to Yaw velocity (0-100).
      */
-    private double scalingFactor = 0.1;
+    private double scalingFactor = -0.1;
 
     private final FrameProcessor mProcessor;
     private final BebopDrone mDrone;

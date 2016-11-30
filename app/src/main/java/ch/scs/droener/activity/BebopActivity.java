@@ -24,7 +24,6 @@ import org.opencv.android.OpenCVLoader;
 
 import ch.scs.droener.R;
 import ch.scs.droener.VisualProcessing.BebopFrameController;
-import ch.scs.droener.VisualProcessing.FrameController;
 import ch.scs.droener.VisualProcessing.FrameProcessor;
 import ch.scs.droener.VisualProcessing.HoughCircleTransformation;
 import ch.scs.droener.drone.BebopDrone;
@@ -43,6 +42,7 @@ public class BebopActivity extends AppCompatActivity {
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
     private Button mDownloadBt;
+    private Button mActiveBt;
 
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
@@ -376,6 +376,19 @@ public class BebopActivity extends AppCompatActivity {
                 }
 
                 return true;
+            }
+        });
+
+        mActiveBt = (Button) findViewById(R.id.actoveBt);
+        mActiveBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFrameController.setActive(!mFrameController.isActive());
+                if (mFrameController.isActive()) {
+                    mActiveBt.setText(R.string.deactivate);
+                } else {
+                    mActiveBt.setText(R.string.activate);
+                }
             }
         });
 

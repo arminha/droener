@@ -117,7 +117,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
                 while (outIndex >= 0) {
                     mFrameCount++;
-                    if (mFrameCount % 2 == 0) {
+                    if (mFrameCount % 10 == 0) {
                         long frameStart = System.currentTimeMillis();
                         try (Image image = mMediaCodec.getOutputImage(outIndex)) {
                             Mat mat = ImageUtils.imageToMat(image);

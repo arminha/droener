@@ -1,6 +1,10 @@
 package ch.scs.droener.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -13,10 +17,15 @@ import com.parrot.arsdk.arcontroller.ARCONTROLLER_STREAM_CODEC_TYPE_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import ch.scs.droener.ImageUtils;
 
 public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -98,8 +107,13 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                 outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
 
                 while (outIndex >= 0) {
-                    Image image = mMediaCodec.getOutputImage(outIndex);
-                    Log.i(TAG, image.toString());
+                    try (Image image = mMediaCodec.getOutputImage(outIndex)) {
+                        Log.i(TAG, "image format: " + image.getFormat());
+                        Mat mat = ImageUtils.imageToMat(image);
+                        Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+                        Utils.matToBitmap(mat, bitmap);
+                        drawBitmap(bitmap);
+                    }
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
                 }
@@ -110,6 +124,30 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
 
 
         mReadyLock.unlock();
+    }
+
+    private void drawBitmap(Bitmap bitmap) {
+        Canvas canvas = getHolder().lockCanvas();
+        if (canvas != null) {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+            float scale = 1;
+            if (scale != 0) {
+                canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
+                        new Rect((int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2),
+                                (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2),
+                                (int)((canvas.getWidth() - scale*bitmap.getWidth()) / 2 + scale*bitmap.getWidth()),
+                                (int)((canvas.getHeight() - scale*bitmap.getHeight()) / 2 + scale*bitmap.getHeight())), null);
+            } else {
+                canvas.drawBitmap(bitmap, new Rect(0,0,bitmap.getWidth(), bitmap.getHeight()),
+                        new Rect((canvas.getWidth() - bitmap.getWidth()) / 2,
+                                (canvas.getHeight() - bitmap.getHeight()) / 2,
+                                (canvas.getWidth() - bitmap.getWidth()) / 2 + bitmap.getWidth(),
+                                (canvas.getHeight() - bitmap.getHeight()) / 2 + bitmap.getHeight()), null);
+            }
+
+            getHolder().unlockCanvasAndPost(canvas);
+        }
     }
 
     public void configureDecoder(ARControllerCodec codec) {

@@ -18,6 +18,10 @@ import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import ch.scs.droener.R;
 import ch.scs.droener.drone.BebopDrone;
 import ch.scs.droener.view.BebopVideoView;
@@ -41,6 +45,8 @@ public class BebopActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.i(TAG, "onCreate");
         setContentView(R.layout.activity_bebop);
 
         initIHM();
@@ -51,6 +57,33 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone.addListener(mBebopListener);
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+        boolean opencv = OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
+        Log.i(TAG, "opencv async loaded: " + opencv);
+    }
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+                    //mOpenCvCameraView.enableView();
+                } break;
+                default:
+                {
+                    Log.i(TAG, "OpenCV not loaded successfully");
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
 
     @Override
     protected void onStart() {

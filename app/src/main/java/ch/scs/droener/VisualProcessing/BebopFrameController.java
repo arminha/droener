@@ -17,12 +17,13 @@ public class BebopFrameController implements FrameController {
     /**
      * Pixel to Yaw velocity (0-100).
      */
-    private double scalingFactor = -0.1;
+    private double scalingFactor = 0.8;
 
     private final FrameProcessor mProcessor;
     private final BebopDrone mDrone;
 
     private boolean mActive;
+    private double lastYaw = 0;
 
     public BebopFrameController(FrameProcessor processor, BebopDrone drone) {
         mProcessor = processor;
@@ -39,10 +40,15 @@ public class BebopFrameController implements FrameController {
         int deviationX = mProcessor.getDeviationX();
         int deviationY = mProcessor.getDeviationY();
 
-        byte newYaw = (byte) Math.round(deviationX * scalingFactor);
-        Log.d(TAG, "X-deviation=" + deviationX + ", Y-deviation=" + deviationY + ", yaw=" + newYaw + ", active=" + mActive);
+        double newYaw = Math.round(deviationX * scalingFactor);
+        lastYaw = 0.7*lastYaw + 0.3*newYaw;
+
+        Log.d(TAG, "X-deviation=" + deviationX + ", Y-deviation=" + deviationY
+                + ", newYaw=" + newYaw+ ", Yaw=" + lastYaw + ", active=" + mActive);
         if (mActive) {
-            mDrone.setYaw(newYaw);
+            mDrone.setYaw((byte)lastYaw);
+        } else {
+            mDrone.setYaw((byte)0);
         }
     }
 

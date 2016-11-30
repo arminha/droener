@@ -127,8 +127,6 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                         }
                         long frameTime = System.currentTimeMillis() - frameStart;
                         Log.d(TAG, "Processed frame in " + frameTime + " ms");
-                    } else {
-                        Log.d(TAG, "Drop frame");
                     }
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);

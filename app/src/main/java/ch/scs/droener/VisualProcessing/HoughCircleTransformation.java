@@ -25,8 +25,6 @@ public class HoughCircleTransformation implements FrameProcessor {
 
     @Override
     public void processFrame(Mat image) {
-        Log.d(TAG, "start processing frame");
-
         Mat circles = new Mat();
         Imgproc.medianBlur(image, image, kernelSize);
         Imgproc.cvtColor(image, circles, Imgproc.COLOR_GRAY2BGR);
@@ -37,8 +35,6 @@ public class HoughCircleTransformation implements FrameProcessor {
 
         int maxRadius = 0;
         Point ptLargestCircle = null;
-
-        Log.d(TAG, "number of detected circles: " + circles.cols());
 
         if (circles.cols() > 0) {
             for (int x = 0; x < circles.cols(); x++) {
@@ -64,8 +60,11 @@ public class HoughCircleTransformation implements FrameProcessor {
                 //Imgproc.circle(image, pt, 3, new Scalar(0, 0, 255), 2);
             }
         }
+        else {
+            Log.d(TAG, "no circle detected.");
+        }
 
-        if (null != ptLargestCircle) {
+    if (null != ptLargestCircle) {
             Log.d(TAG, "largest circle detected center " + ptLargestCircle);
             deviationX = (int) ptLargestCircle.x - image.width() / 2;
             deviationY = (int) ptLargestCircle.y - image.height() / 2;

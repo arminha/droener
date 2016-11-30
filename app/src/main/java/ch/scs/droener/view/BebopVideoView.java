@@ -126,6 +126,8 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
                             Utils.matToBitmap(mat, bitmap);
                             drawBitmap(bitmap);
                         }
+                    } else {
+                        Log.d(TAG, "Drop frame");
                     }
                     mMediaCodec.releaseOutputBuffer(outIndex, true);
                     outIndex = mMediaCodec.dequeueOutputBuffer(info, 0);
